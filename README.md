@@ -13,7 +13,10 @@ After downloading the extension just run the install script:
 ```sh install.sh```
 
 To enable the extension install and run gnome-tweaks, or go to the gnome extensions web page.
+
 ```sudo apt install gnome-tweaks```
+
+or open the gnome extension webpage and enable the extension from there:
 
 ```https://extensions.gnome.org/local```
 
