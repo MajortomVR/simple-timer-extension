@@ -10,4 +10,5 @@ FILES="
    LICENSE \
    "
 
+rm -f $FILENAME_ZIP
 zip -r $FILENAME_ZIP $FILES
