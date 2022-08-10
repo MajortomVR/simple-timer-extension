@@ -14,11 +14,10 @@ const Timer = Me.imports.timer;
 
 class Extension {
    constructor() {
-            
+      this.timer = new Timer.Timer();      
    }
 
    enable() {
-      this.timer = new Timer.Timer();
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);      
       
       // MAIN PANEL
@@ -77,6 +76,12 @@ class Extension {
       Main.panel.addToStatusArea("Simple-Timer", this.panelButton, 0, "right");
       
       this.initMainLoop();
+      
+      // Check if timer is still running, and if it is -> reload the timer running view
+      if (this.timer.timeLeftSeconds > 0) {
+         this.timer.update();
+         this.timerShow();
+      }
    }
 
    disable() {
@@ -84,6 +89,8 @@ class Extension {
       this.panelButton.destroy();
    }
    
+
+
    initMainLoop() {
       // Update Timer
       this.timeout = MainLoop.timeout_add(1000, () => {
@@ -108,6 +115,13 @@ class Extension {
    timerStart(timeSeconds) {
       if (timeSeconds > 0) {
          this.timer.start(timeSeconds);
+         this.timerShow();
+      }      
+   }
+
+   // Shows the timer if it is running
+   timerShow() {
+      if (this.timer.timeLeftSeconds > 0) {
          this.updateTimerLabel();
          this.changeTimerLabelStyle(false);
          this.timerLabel.show();
@@ -131,7 +145,6 @@ class Extension {
          }
       }
    }      
-
    
    // Alert by sending a notification and a sound effect.
    createTimerFinishedAlert() {
