@@ -16,7 +16,7 @@ class Extension {
    constructor() {
       this.timer = new Timer.Timer();      
    }
-
+   
    enable() {
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);      
       
@@ -72,9 +72,9 @@ class Extension {
       this.itemInput.add(this.timerEntry);
       this.panelButton.menu.addMenuItem(this.itemInput);
 
-      this.panelButton.add_child(this.panelButtonLayout);
+      this.panelButton.add_child(this.panelButtonLayout);      
       Main.panel.addToStatusArea("Simple-Timer", this.panelButton, 0, "right");
-      
+
       this.initMainLoop();
       
       // Check if timer is still running, and if it is -> reload the timer running view
@@ -85,8 +85,9 @@ class Extension {
    }
 
    disable() {
+      // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
       this.freeMainLoop();
-      this.panelButton.destroy();
+      this.panelButton.destroy();      
    }
    
 
@@ -112,7 +113,7 @@ class Extension {
    }
 
    // Starts the timer and sets the countdown time.
-   timerStart(timeSeconds) {
+   timerStart(timeSeconds) {      
       if (timeSeconds > 0) {
          this.timer.start(timeSeconds);
          this.timerShow();

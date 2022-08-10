@@ -7,5 +7,5 @@
     "42"
   ],
   "url": "https://github.com/MajortomVR/simple-timer-extension",
-  "version": 1
+  "session-modes":  [ "unlock-dialog", "user" ]  
 }
