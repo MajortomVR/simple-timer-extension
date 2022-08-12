@@ -62,3 +62,32 @@ function parseTimeInput(text) {
 
    return timerSeconds;
 }
+
+// Handles colon insertion
+function timeInputColonHandler(text) {
+   // filter all characters except 0-9
+   let numberString = "";
+
+   for (let i=0; i<text.length; i++) {
+      let c = text[i];
+      if (c >= '0' && c <= '9') {
+         numberString += c;
+      }
+   }
+
+   let numIndex = 0;
+   let finalText = "";
+   // After every second number, add a colon
+   for (let i=numberString.length - 1; i>=0; i--) {
+      numIndex++;
+                  
+      if (numIndex == 3) {
+         numIndex = 1;
+         finalText = ":" + finalText;
+      }
+
+      finalText = numberString[i] + finalText;
+   }
+
+   return finalText;
+}

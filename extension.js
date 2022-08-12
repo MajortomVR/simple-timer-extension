@@ -37,6 +37,7 @@ class Extension {
       this.panelButtonLayout.add(this.icon);
       this.panelButtonLayout.add(this.timerLabel);     
       
+      
       // PANEL-MENU      
       this.menuButtonStop = new PopupMenu.PopupImageMenuItem("Stop", "media-playback-stop-symbolic");      
       this.menuButtonStop.connect('activate', () => {
@@ -59,9 +60,21 @@ class Extension {
          y_expand : true         
       });
 
+      this.menuTimerInputEntry.set_input_purpose(Clutter.TIME);
+      this.menuTimerInputEntry.clutter_text.set_max_length(9);
+
       // Input Field Event Management
       this.menuTimerInputEntry.clutter_text.connect('activate', ()=> {
          this.timerStart(Misc.parseTimeInput(this.menuTimerInputEntry.get_text()));
+      });
+      // Text Change Event Handling
+      this.menuTimerInputEntry.clutter_text.connect('text-changed', ()=> {
+         let text = this.menuTimerInputEntry.get_text();
+         let newText = Misc.timeInputColonHandler( text );         
+
+         if (text != newText) {
+            this.menuTimerInputEntry.set_text(newText);
+         }         
       });
       this.menuTimerInputEntry.connect('primary-icon-clicked', () => { 
          this.timerStart(Misc.parseTimeInput(this.menuTimerInputEntry.get_text()));         
@@ -100,7 +113,7 @@ class Extension {
       } else {
          this.menuTimerInputEntry.hide();
          this.menuButtonStop.show();
-
+                  
       }
    }
 
@@ -113,7 +126,7 @@ class Extension {
          if (this.timer.finished) {
             this.timer.reset();            
             this.createTimerFinishedAlert();
-            this.changeTimerLabelStyle(true);            
+            this.changeTimerLabelStyle(true);
             updateMenuButtonVisibilty();
          }
          
@@ -172,7 +185,7 @@ class Extension {
       
       // Send Notification
       Main.notify('Timer finished!');
-   }   
+   }      
 }
 
 
