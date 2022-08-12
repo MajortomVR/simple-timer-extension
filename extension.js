@@ -38,14 +38,14 @@ class Extension {
       this.panelButtonLayout.add(this.timerLabel);     
       
       // PANEL-MENU      
-      this.menuButton = new PopupMenu.PopupImageMenuItem("Stop", "media-playback-stop-symbolic");      
-      this.menuButton.connect('activate', () => {
+      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("Stop", "media-playback-stop-symbolic");      
+      this.menuButtonStop.connect('activate', () => {
          this.timer.reset();
          this.changeTimerLabelStyle(false);
          this.updateTimerLabel();
          this.timerLabel.hide();
       });
-      this.panelButton.menu.addMenuItem(this.menuButton);      
+      this.panelButton.menu.addMenuItem(this.menuButtonStop);      
       
       // Timer Input Field            
       this.menuTimerInputEntry = new St.Entry({
