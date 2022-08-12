@@ -48,28 +48,28 @@ class Extension {
       this.panelButton.menu.addMenuItem(this.menuButton);      
       
       // Timer Input Field            
-      this.timerEntry = new St.Entry({
+      this.menuTimerInputEntry = new St.Entry({
          name: 'time',
          primary_icon : new St.Icon({ icon_name : 'media-playback-start-symbolic', icon_size : 24 }),
          can_focus : true,
          hint_text: _("Enter countdown time..."),
          x_expand : true,
-         y_expand : true
+         y_expand : true         
       });
 
       // Input Field Event Management
-      this.timerEntry.clutter_text.connect('activate', ()=> {
-         this.timerStart(Misc.parseTimeInput(this.timerEntry.text));
+      this.menuTimerInputEntry.clutter_text.connect('activate', ()=> {
+         this.timerStart(Misc.parseTimeInput(this.menuTimerInputEntry.get_text()));
       });
-      this.timerEntry.connect('primary-icon-clicked', () => { 
-         this.timerStart(Misc.parseTimeInput(this.timerEntry.text));         
+      this.menuTimerInputEntry.connect('primary-icon-clicked', () => { 
+         this.timerStart(Misc.parseTimeInput(this.menuTimerInputEntry.get_text()));         
       });
-
+      
       this.itemInput = new PopupMenu.PopupBaseMenuItem({
          reactive : false,
          can_focus : false
       });
-      this.itemInput.add(this.timerEntry);
+      this.itemInput.add(this.menuTimerInputEntry);
       this.panelButton.menu.addMenuItem(this.itemInput);
 
       this.panelButton.add_child(this.panelButtonLayout);      
