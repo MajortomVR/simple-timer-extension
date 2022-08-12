@@ -44,8 +44,10 @@ class Extension {
          this.changeTimerLabelStyle(false);
          this.updateTimerLabel();
          this.timerLabel.hide();
+         this.updateMenuButtonVisibilty();
       });
       this.panelButton.menu.addMenuItem(this.menuButtonStop);      
+      this.menuButtonStop.hide();
       
       // Timer Input Field            
       this.menuTimerInputEntry = new St.Entry({
@@ -90,7 +92,17 @@ class Extension {
       this.panelButton.destroy();      
    }
    
+   // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
+   updateMenuButtonVisibilty() {
+      if (this.timer.timeLeftSeconds <= 0) {
+         this.menuButtonStop.hide();
+         this.menuTimerInputEntry.show();
+      } else {
+         this.menuTimerInputEntry.hide();
+         this.menuButtonStop.show();
 
+      }
+   }
 
    initMainLoop() {
       // Update Timer
@@ -102,7 +114,9 @@ class Extension {
             this.timer.reset();            
             this.createTimerFinishedAlert();
             this.changeTimerLabelStyle(true);            
+            updateMenuButtonVisibilty();
          }
+         
          return true;
       });
    }
@@ -126,6 +140,8 @@ class Extension {
          this.updateTimerLabel();
          this.changeTimerLabelStyle(false);
          this.timerLabel.show();
+         this.menuButtonStop.show();
+         this.updateMenuButtonVisibilty();
       }
    }
 
