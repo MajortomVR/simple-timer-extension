@@ -127,7 +127,8 @@ class Extension {
    disable() {
       // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
       this.freeMainLoop();
-      this.panelButton.destroy();      
+      this.panelButton.destroy();
+      this.panelButton = null;
    }
    
    // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
