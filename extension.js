@@ -16,9 +16,7 @@ class Extension {
    constructor() {};
    
    enable() {
-      if (!this.timer) {
-         this.timer = new Timer.Timer();
-      }
+      this.timer = new Timer.Timer();
 
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);      
       
@@ -129,6 +127,7 @@ class Extension {
       this.freeMainLoop();
       this.panelButton.destroy();
       this.panelButton = null;
+      this.timer = null;
    }
    
    // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
