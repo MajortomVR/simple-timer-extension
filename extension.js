@@ -14,41 +14,62 @@ const Timer = Me.imports.timer;
 
 class Extension {
    constructor() {
-      this.timer = new Timer.Timer();      
+      this.timer = new Timer.Timer();
    }
    
    enable() {
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);      
       
       // MAIN PANEL
-      this.icon = new St.Icon({
-         icon_name: 'alarm-symbolic',
-         style_class: 'system-status-icon'
-      });
-      this.timerLabel = new St.Label({
-         style_class: 'countdown',
-         text: '0:00',
-         y_expand: true,
-         y_align: Clutter.ActorAlign.CENTER
-      });
-      this.timerLabel.hide();
+      this.icon = new St.Icon({ icon_name: 'alarm-symbolic', style_class: 'system-status-icon' });
+      this.timerLabel = new St.Label({ text: '0:00', y_expand: true, y_align: Clutter.ActorAlign.CENTER });
+      this.timerLabel.hide();      
       
       this.panelButtonLayout = new St.BoxLayout();
       this.panelButtonLayout.add(this.icon);
       this.panelButtonLayout.add(this.timerLabel);     
       
-      
-      // PANEL-MENU      
-      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("Stop", "media-playback-stop-symbolic");      
+
+      // PANEL-MENU
+      let boxMenuItem = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
+      let boxLayout = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
+      boxMenuItem.add_child(boxLayout);
+
+      // STOP Button
+      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("", "media-playback-stop-symbolic");      
       this.menuButtonStop.connect('activate', () => {
          this.timer.reset();
-         this.changeTimerLabelStyle(false);
+         this.updateTimerLabelStyle();
          this.updateTimerLabel();
          this.timerLabel.hide();
          this.updateMenuButtonVisibilty();
       });
-      this.panelButton.menu.addMenuItem(this.menuButtonStop);      
-      this.menuButtonStop.hide();
+      boxLayout.add_child(this.menuButtonStop);      
+
+      // Pause Button
+      this.menuButtonPause = new PopupMenu.PopupImageMenuItem("", "media-playback-pause-symbolic");      
+      this.menuButtonPause.connect('activate', () => {
+         this.timer.pause();
+         this.updateMenuButtonVisibilty();
+      });      
+      boxLayout.add_child(this.menuButtonPause);
+
+      // Resume Button
+      this.menuButtonResume = new PopupMenu.PopupImageMenuItem("", "media-playback-start-symbolic");
+      this.menuButtonResume.connect('activate', () => {
+         if (this.timer.isFinished() || this.timer.isStopped()) {
+            this.timerStart();
+         } else {
+            this.timer.resume();
+         }
+
+         this.updateMenuButtonVisibilty();
+      });      
+      boxLayout.add_child(this.menuButtonResume);
+      this.panelButton.menu.addMenuItem(boxMenuItem);
+      
+      // Seperator
+      this.panelButton.menu.addMenuItem( new PopupMenu.PopupSeparatorMenuItem() );
       
       // Timer Input Field            
       this.menuTimerInputEntry = new St.Entry({
@@ -57,7 +78,7 @@ class Extension {
          can_focus : true,
          hint_text: _("Enter countdown time..."),
          x_expand : true,
-         y_expand : true         
+         y_expand : true
       });
 
       this.menuTimerInputEntry.set_input_purpose(Clutter.TIME);
@@ -65,7 +86,10 @@ class Extension {
 
       // Input Field Event Management
       this.menuTimerInputEntry.clutter_text.connect('activate', ()=> {
-         this.timerStart(Misc.parseTimeInput(this.menuTimerInputEntry.get_text()));
+         this.timerStart();
+      });
+      this.menuTimerInputEntry.connect('primary-icon-clicked', () => { 
+         this.timerStart();
       });
       // Text Change Event Handling
       this.menuTimerInputEntry.clutter_text.connect('text-changed', ()=> {
@@ -75,10 +99,7 @@ class Extension {
          if (text != newText) {
             this.menuTimerInputEntry.set_text(newText);
          }         
-      });
-      this.menuTimerInputEntry.connect('primary-icon-clicked', () => { 
-         this.timerStart(Misc.parseTimeInput(this.menuTimerInputEntry.get_text()));         
-      });
+      });      
       
       this.itemInput = new PopupMenu.PopupBaseMenuItem({
          reactive : false,
@@ -86,17 +107,19 @@ class Extension {
       });
       this.itemInput.add(this.menuTimerInputEntry);
       this.panelButton.menu.addMenuItem(this.itemInput);
-
       this.panelButton.add_child(this.panelButtonLayout);      
+
       Main.panel.addToStatusArea("Simple-Timer", this.panelButton, 0, "right");
 
+      // Start
+      this.updateMenuButtonVisibilty();
       this.initMainLoop();
       
-      // Check if timer is still running, and if it is -> reload the timer running view
-      if (this.timer.timeLeftSeconds > 0) {
+      // Check if timer is still running, and if it is -> reload the timer running view      
+      if (this.timer.isRunning()) {
          this.timer.update();
          this.timerShow();
-      }
+      }      
    }
 
    disable() {
@@ -106,16 +129,12 @@ class Extension {
    }
    
    // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
-   updateMenuButtonVisibilty() {
-      if (this.timer.timeLeftSeconds <= 0) {
-         this.menuButtonStop.hide();
-         this.menuTimerInputEntry.show();
-      } else {
-         this.menuTimerInputEntry.hide();
-         this.menuButtonStop.show();
-                  
-      }
-   }
+   updateMenuButtonVisibilty() {      
+      //showStartEntry ? this.menuTimerInputEntry.show() : this.menuTimerInputEntry.hide();
+      this.handleButtonStyle(this.menuButtonStop, this.timer.isStopped());
+      this.handleButtonStyle(this.menuButtonPause, this.timer.isPaused());
+      this.handleButtonStyle(this.menuButtonResume, this.timer.isRunning());
+   }   
 
    initMainLoop() {
       // Update Timer
@@ -123,12 +142,13 @@ class Extension {
          this.timer.update();
          this.updateTimerLabel();
          
-         if (this.timer.finished) {
-            this.timer.reset();            
-            this.createTimerFinishedAlert();
-            this.changeTimerLabelStyle(true);
-            updateMenuButtonVisibilty();
+         if (this.timer.isFinished() && !this.timer.isNotificationSent()) {
+            this.timer.setNotificationSent();
+            this.createTimerFinishedAlert();            
+            this.updateMenuButtonVisibilty();
          }
+
+         this.updateTimerLabelStyle();
          
          return true;
       });
@@ -140,7 +160,9 @@ class Extension {
    }
 
    // Starts the timer and sets the countdown time.
-   timerStart(timeSeconds) {      
+   timerStart() {      
+      let timeSeconds = Misc.parseTimeInput( this.menuTimerInputEntry.get_text() );
+      
       if (timeSeconds > 0) {
          this.timer.start(timeSeconds);
          this.timerShow();
@@ -149,32 +171,50 @@ class Extension {
 
    // Shows the timer if it is running
    timerShow() {
-      if (this.timer.timeLeftSeconds > 0) {
+      if (this.timer.isRunning()) {
          this.updateTimerLabel();
-         this.changeTimerLabelStyle(false);
+         this.updateTimerLabelStyle(false);
          this.timerLabel.show();
          this.menuButtonStop.show();
          this.updateMenuButtonVisibilty();
-      }
+      }      
    }
 
    // Updates the timer-label with the current time left.
-   updateTimerLabel() {
+   updateTimerLabel() {      
       this.timerLabel.set_text( Misc.formatTime(this.timer.timeLeftSeconds) );
    }
 
    // Shows the Timer in a different style depending on wether an alert was triggered, or not.
-   changeTimerLabelStyle(isAlert) {
+   updateTimerLabelStyle() {
       if (this.timerLabel) {
-         if (isAlert) {
-            this.timerLabel.add_style_class_name('countdown-alert');
-            this.timerLabel.remove_style_class_name('countdown');
+         let style = '';
+
+         if (this.timer.isFinished()) {
+            style = 'countdown-alert';
+         } else if (this.timer.isPaused()) {
+            style = 'countdown-paused';
          } else {
-            this.timerLabel.add_style_class_name('countdown');
-            this.timerLabel.remove_style_class_name('countdown-alert');
+            style = 'countdown';
+         }
+
+         if (this.timerLabel.style_class != style) {
+            this.timerLabel.style_class = style;
+            log(this.timerLabel.style_class);
          }
       }
-   }      
+   }
+   
+   // Swichtes style classes depending on button active status.
+   handleButtonStyle(button, active) {
+      if (active) {
+         button.remove_style_class_name('img-button-inactive');
+         button.add_style_class_name('img-button-active');
+      } else {
+         button.remove_style_class_name('img-button-active');
+         button.add_style_class_name('img-button-inactive');
+      }      
+   }
    
    // Alert by sending a notification and a sound effect.
    createTimerFinishedAlert() {
