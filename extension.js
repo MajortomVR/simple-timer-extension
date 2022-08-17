@@ -203,7 +203,6 @@ class Extension {
 
          if (this.timerLabel.style_class != style) {
             this.timerLabel.style_class = style;
-            log(this.timerLabel.style_class);
          }
       }
    }
