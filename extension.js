@@ -13,11 +13,13 @@ const Timer = Me.imports.timer;
 
 
 class Extension {
-   constructor() {
-      this.timer = new Timer.Timer();
-   }
+   constructor() {};
    
    enable() {
+      if (!this.timer) {
+         this.timer = new Timer.Timer();
+      }
+
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);      
       
       // MAIN PANEL
