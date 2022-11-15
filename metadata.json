@@ -3,9 +3,9 @@
   "description": "Simple Timer is a Gnome Shell Extension that adds a Timer to the Panel.",
   "uuid": "simple-timer@majortomvr.github.com",
   "shell-version": [
-    "42"
+    "42", "43"
   ],
   "url": "https://github.com/MajortomVR/simple-timer-extension",
-  "version": 4,
+  "version": 5,
   "session-modes":  [ "unlock-dialog", "user" ]  
 }
