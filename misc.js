@@ -37,7 +37,7 @@ function formatTime(seconds) {
 }
 
 /**
- *    Takes a Time String like 2:47 (2min 47) and returns the time in seconds.
+ *    Takes a Time String (HH:MM:SS) like 2:47 (2min 47) and returns the time in seconds.
  * @param {*} text a string like 2:47 or 1:12:10 (1h, 12min, 10sec)
  */
 function parseTimeInput(text) {
