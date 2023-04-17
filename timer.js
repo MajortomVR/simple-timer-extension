@@ -5,8 +5,6 @@ const TimerState = {
    FINISHED: 'Finished'
 };
 
-const foobar = "FooBar";
-
 var Timer = class Timer {      
    constructor() {
       this.state = TimerState.STOPPED;      
