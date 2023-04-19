@@ -27,9 +27,8 @@ class Extension {
       
       this.panelButtonLayout = new St.BoxLayout();
       this.panelButtonLayout.add(this.icon);
-      this.panelButtonLayout.add(this.timerLabel);     
-      
-
+      this.panelButtonLayout.add(this.timerLabel);           
+            
       // PANEL-MENU
       let boxMenuItem = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
       let boxLayout = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
@@ -67,10 +66,10 @@ class Extension {
       });      
       boxLayout.add_child(this.menuButtonResume);
       this.panelButton.menu.addMenuItem(boxMenuItem);
-      
+
       // Seperator
-      this.panelButton.menu.addMenuItem( new PopupMenu.PopupSeparatorMenuItem() );
-      
+      this.panelButton.menu.addMenuItem( new PopupMenu.PopupSeparatorMenuItem() );      
+
       // Timer Input Field            
       this.menuTimerInputEntry = new St.Entry({
          name: 'time',
@@ -82,7 +81,7 @@ class Extension {
       });
 
       this.menuTimerInputEntry.set_input_purpose(Clutter.TIME);
-      this.menuTimerInputEntry.clutter_text.set_max_length(9);
+      this.menuTimerInputEntry.clutter_text.set_max_length(12);
 
       // Input Field Event Management
       this.menuTimerInputEntry.clutter_text.connect('activate', ()=> {
@@ -91,11 +90,20 @@ class Extension {
       this.menuTimerInputEntry.connect('primary-icon-clicked', () => { 
          this.timerStart();
       });
-      // Text Change Event Handling
+      
+      // Timer-Input Text Change Event Handling
       this.menuTimerInputEntry.clutter_text.connect('text-changed', ()=> {
-         let text = this.menuTimerInputEntry.get_text();
-         let newText = Misc.timeInputColonHandler( text );         
+         let text = this.menuTimerInputEntry.get_text();                  
+         let newText = "";
 
+         // This code comment filters the time input based on its format, either as a colon-separated format like "3:00:00" or a letter format like "2h 47m 12s".
+         if (Misc.getTimeInputFormat(text) === Misc.TimeInputFormat.LETTERS) {
+            newText = Misc.timeInputLetterHandler(text);
+         } else {
+            newText = Misc.timeInputColonHandler(text);
+         }
+
+         // If the input filter has changed the input, we update the text input field with the corrected text.
          if (text != newText) {
             this.menuTimerInputEntry.set_text(newText);
          }         
@@ -107,6 +115,8 @@ class Extension {
       });
       this.itemInput.add(this.menuTimerInputEntry);
       this.panelButton.menu.addMenuItem(this.itemInput);
+            
+      
       this.panelButton.add_child(this.panelButtonLayout);      
 
       Main.panel.addToStatusArea("Simple-Timer", this.panelButton, 0, "right");
