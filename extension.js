@@ -29,47 +29,7 @@ class Extension {
       this.panelButtonLayout.add(this.icon);
       this.panelButtonLayout.add(this.timerLabel);           
             
-      // PANEL-MENU
-      let boxMenuItem = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
-      let boxLayout = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
-      boxMenuItem.add_child(boxLayout);
-
-      // STOP Button
-      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("", "media-playback-stop-symbolic");      
-      this.menuButtonStop.connect('activate', () => {
-         this.timer.reset();
-         this.updateTimerLabelStyle();
-         this.updateTimerLabel();
-         this.timerLabel.hide();
-         this.updateMenuButtonVisibilty();
-      });
-      boxLayout.add_child(this.menuButtonStop);      
-
-      // Pause Button
-      this.menuButtonPause = new PopupMenu.PopupImageMenuItem("", "media-playback-pause-symbolic");      
-      this.menuButtonPause.connect('activate', () => {
-         this.timer.pause();
-         this.updateMenuButtonVisibilty();
-      });      
-      boxLayout.add_child(this.menuButtonPause);
-
-      // Resume Button
-      this.menuButtonResume = new PopupMenu.PopupImageMenuItem("", "media-playback-start-symbolic");
-      this.menuButtonResume.connect('activate', () => {
-         if (this.timer.isFinished() || this.timer.isStopped()) {
-            this.timerStart();
-         } else {
-            this.timer.resume();
-         }
-
-         this.updateMenuButtonVisibilty();
-      });      
-      boxLayout.add_child(this.menuButtonResume);
-      this.panelButton.menu.addMenuItem(boxMenuItem);
-
-      // Seperator
-      this.panelButton.menu.addMenuItem( new PopupMenu.PopupSeparatorMenuItem() );      
-
+      
       // Timer Input Field            
       this.menuTimerInputEntry = new St.Entry({
          name: 'time',
@@ -116,6 +76,47 @@ class Extension {
       this.itemInput.add(this.menuTimerInputEntry);
       this.panelButton.menu.addMenuItem(this.itemInput);
             
+      // Seperator
+      this.panelButton.menu.addMenuItem( new PopupMenu.PopupSeparatorMenuItem() );      
+
+      // PANEL-MENU
+      let boxMenuItem = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
+      let boxLayout = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
+      boxMenuItem.add_child(boxLayout);
+
+      // STOP Button
+      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("", "media-playback-stop-symbolic");      
+      this.menuButtonStop.connect('activate', () => {
+         this.timer.reset();
+         this.updateTimerLabelStyle();
+         this.updateTimerLabel();
+         this.timerLabel.hide();
+         this.updateMenuButtonVisibilty();
+      });
+      boxLayout.add_child(this.menuButtonStop);      
+
+      // Pause Button
+      this.menuButtonPause = new PopupMenu.PopupImageMenuItem("", "media-playback-pause-symbolic");      
+      this.menuButtonPause.connect('activate', () => {
+         this.timer.pause();
+         this.updateMenuButtonVisibilty();
+      });      
+      boxLayout.add_child(this.menuButtonPause);
+
+      // Resume Button
+      this.menuButtonResume = new PopupMenu.PopupImageMenuItem("", "media-playback-start-symbolic");
+      this.menuButtonResume.connect('activate', () => {
+         if (this.timer.isFinished() || this.timer.isStopped()) {
+            this.timerStart();
+         } else {
+            this.timer.resume();
+         }
+
+         this.updateMenuButtonVisibilty();
+      });      
+      boxLayout.add_child(this.menuButtonResume);
+      this.panelButton.menu.addMenuItem(boxMenuItem);
+
       
       this.panelButton.add_child(this.panelButtonLayout);      
 
