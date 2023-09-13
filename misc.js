@@ -5,17 +5,17 @@ const TimeInputFormat = {
 
 /**
  * Determinates the format of a given time input.
- * @param {string} text 
+ * @param {string} text
  * @returns {string} - TimeInputFormat
  */
 function getTimeInputFormat(text) {
    // Detects the time input format.
    let lowerCasedText = text.toLowerCase();
-   
-   // If the input contains the letters h, m or s, it's the letter format.   
-   if (lowerCasedText.includes("h") || lowerCasedText.includes("m") || lowerCasedText.includes("s")) {      
+
+   // If the input contains the letters h, m or s, it's the letter format.
+   if (lowerCasedText.includes("h") || lowerCasedText.includes("m") || lowerCasedText.includes("s")) {
       return TimeInputFormat.LETTERS;
-   // In every other case, fallback to the colon format.
+      // In every other case, fallback to the colon format.
    } else {
       return TimeInputFormat.COLONS;
    }
@@ -24,7 +24,7 @@ function getTimeInputFormat(text) {
 
 /**
  * Formats the Time to be nicely formatted for printing to the user.
- * @param {*} seconds 
+ * @param {*} seconds
  * @returns the formatted time as a string
  */
 function formatTime(seconds) {
@@ -82,17 +82,17 @@ function parseTimeInputColons(text) {
    const timeArray = text.split(":");
    let timerSeconds = 0;
 
-   for (let i=0; i<timeArray.length; i++) {
-      let time = timeArray[timeArray.length - 1 - i];                        
+   for (let i = 0; i < timeArray.length; i++) {
+      let time = timeArray[timeArray.length - 1 - i];
       let timeValue = parseInt(time);
 
       // Seconds
       if (i == 0) {
          timerSeconds += timeValue;
-      // Minutes
+         // Minutes
       } else if (i == 1) {
          timerSeconds += timeValue * 60;
-      // Hours
+         // Hours
       } else if (i == 2) {
          timerSeconds += timeValue * 60 * 60;
       }
@@ -106,14 +106,14 @@ function parseTimeInputColons(text) {
  * @param {string} text - The input string to parse.
  * @returns {number} The duration in seconds represented by the input string.
  */
-function parseTimeInputHMS(text) {   
+function parseTimeInputHMS(text) {
    text = timeInputLetterHandler(text) + ' '; // The extra space character is needed for the parsing algorithm
 
    let buffer = "";
    let timeAmount = 0;
    let timerDurationSeconds = 0;
-   
-   for (let i=0; i<text.length; i++) {
+
+   for (let i = 0; i < text.length; i++) {
       let c = text[i];
       let previousChar = (i > 0) ? text[i - 1] : '';
 
@@ -130,13 +130,13 @@ function parseTimeInputHMS(text) {
                if (buffer == 'h') {
                   timerDurationSeconds += timeAmount * 60 * 60;
                } else if (buffer == 'm') {
-                  timerDurationSeconds += timeAmount * 60;                  
+                  timerDurationSeconds += timeAmount * 60;
                } else {
                   timerDurationSeconds += timeAmount;
-               }      
-               
+               }
+
                timeAmount = 0; // Reset because if there is no letter at the end the time-amount will be added and assumed to be seconds.
-            }            
+            }
          }
 
          buffer = "";
@@ -144,7 +144,7 @@ function parseTimeInputHMS(text) {
 
       if (c != ' ') {
          buffer += c;
-      }      
+      }
    }
 
    // If there was no unit [h,m,s] added then assume seconds and add the time to the timer.
@@ -217,16 +217,16 @@ function getCharacterType(character) {
  * @param {string} text 
  * @returns {string} text corrected to the 0h 0m 0s format
  */
-function timeInputLetterHandler(text){
-   const allowedChars = "hms1234567890 ";   
+function timeInputLetterHandler(text) {
+   const allowedChars = "hms1234567890 ";
    let lowerCasedText = text.toLowerCase();
    let filteredText = "";
-   
+
    // Filter all characters except for 'h','m','s', ' ' (spaces), and digits
-   for (let i=0; i<lowerCasedText.length; i++) {
+   for (let i = 0; i < lowerCasedText.length; i++) {
       let c = lowerCasedText[i];
 
-      if (allowedChars.includes(c)) {         
+      if (allowedChars.includes(c)) {
          let previousChar = i > 0 ? lowerCasedText[i - 1] : '';
 
          // Space is only allowed after a time letter ('h','m','s')
@@ -243,7 +243,7 @@ function timeInputLetterHandler(text){
          }
 
          filteredText += c;
-      }      
+      }
    }
 
    return filteredText;
@@ -258,7 +258,7 @@ function timeInputColonHandler(text) {
    // filter all characters except 0-9
    let numberString = "";
 
-   for (let i=0; i<text.length; i++) {
+   for (let i = 0; i < text.length; i++) {
       let c = text[i];
       if (c >= '0' && c <= '9') {
          numberString += c;
@@ -268,9 +268,9 @@ function timeInputColonHandler(text) {
    let numIndex = 0;
    let finalText = "";
    // After every second number, add a colon
-   for (let i=numberString.length - 1; i>=0; i--) {
+   for (let i = numberString.length - 1; i >= 0; i--) {
       numIndex++;
-                  
+
       if (numIndex == 3) {
          numIndex = 1;
          finalText = ":" + finalText;
