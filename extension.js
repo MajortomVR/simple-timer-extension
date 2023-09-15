@@ -17,7 +17,7 @@ class Extension {
 
    enable() {
 
-
+      this.audioLoopCount = 0;
       this.timer = new Timer.Timer();
 
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);
@@ -151,15 +151,19 @@ class Extension {
       });
       boxLayout.add_child(this.menuButtonFourth); // Corrected
 
-
    }
 
    disable() {
-      // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
       this.freeMainLoop();
       this.panelButton.destroy();
       this.panelButton = null;
-      this.timer = null;
+
+      // Stop the timer
+      this.timer.reset();
+      this.updateTimerLabelStyle();
+      this.updateTimerLabel();
+      this.timerLabel.hide();
+      this.updateMenuButtonVisibilty();
    }
 
    // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
@@ -231,7 +235,6 @@ class Extension {
          } else {
             style = 'countdown';
          }
-
          if (this.timerLabel.style_class != style) {
             this.timerLabel.style_class = style;
          }
@@ -239,24 +242,34 @@ class Extension {
    }
 
    // Swichtes style classes depending on button active status.
-   handleButtonStyle(button, active) {
-      if (active) {
-         button.remove_style_class_name('img-button-inactive');
-         button.add_style_class_name('img-button-active');
-      } else {
-         button.remove_style_class_name('img-button-active');
-         button.add_style_class_name('img-button-inactive');
-      }
-   }
-
-   // Alert by sending a notification and a sound effect.
    createTimerFinishedAlert() {
-      // Play Audio
-      let player = global.display.get_sound_player();
-      let soundFile = Gio.File.new_for_path(Me.dir.get_path() + "/sfx/Polite.wav");
-      player.play_from_file(soundFile, 'Alert', null);
+      const player = global.display.get_sound_player();
+      const soundFile = Gio.File.new_for_path(Me.dir.get_path() + "/sfx/Polite.wav");
 
-      // Send Notification
+      // Play the sound multiple times with a delay
+      const loopCount = 5;
+      const delaySeconds = 2;
+      for (let i = 0; i < loopCount; i++) {
+         // Play the sound
+         player.play_from_file(soundFile);
+
+         // Delay before playing the sound again
+         MainLoop.timeout_add_seconds(delaySeconds, () => {
+            // Increment the loop count
+            this.audioLoopCount++;
+
+            // Stop playing the sound after the specified number of loops
+            if (this.audioLoopCount >= loopCount) {
+               player.stop();
+
+               // Reset the loop count
+               this.audioLoopCount = 0;
+            }
+
+            return false;
+         });
+      }
+
       Main.notify('Timer finished!');
    }
 }
