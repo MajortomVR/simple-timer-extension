@@ -12,12 +12,19 @@ const Misc = Me.imports.misc;
 const Timer = Me.imports.timer;
 
 
+// Initializes the Extension
+function init() {
+   return new Extension();
+}
+
+
+// Alert by sending a notification and a sound effect.
+
+
 class Extension {
    constructor() { };
 
    enable() {
-
-      this.audioLoopCount = 0;
       this.timer = new Timer.Timer();
 
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);
@@ -40,7 +47,6 @@ class Extension {
          hint_text: _("Enter countdown time..."),
          x_expand: true,
          y_expand: true
-
       });
 
       this.menuTimerInputEntry.set_input_purpose(Clutter.TIME);
@@ -135,35 +141,47 @@ class Extension {
          this.timerShow();
       }
 
-      // pomodoro Button
-      this.menuButtonFourth = new PopupMenu.PopupImageMenuItem("", "alarm-symbolic");
-      this.menuButtonFourth.connect('activate', () => {
-         this.timer.start(25 * 60); // 25 minutes in seconds
-         this.timerShow();
-         this.updateTimerLabel();
-         // After 25 minutes, start a 5-minute timer
-         MainLoop.timeout_add_seconds(25 * 60, () => {
-            this.timer.start(5 * 60); // 5 minutes in seconds
+      // Pomodoro Button
+      this.menuButtonPomodoro = new PopupMenu.PopupImageMenuItem("", "alarm-symbolic");
+      this.menuButtonPomodoro.connect('activate', () => {
+         // Check if the timer is already running
+         if (!this.timer.isRunning()) {
+            // Set the timer input to 25:00
+            this.menuTimerInputEntry.set_text('25:00');
+            // Start the timer
+            this.timerStart();
+
+            // Schedule a 5-minute break timer
+            MainLoop.timeout_add_seconds(25 * 60, () => {
+               // Check if the Pomodoro timer is still running
+               if (this.timer.isRunning()) {
+                  // Set the timer input to 5:00
+                  this.menuTimerInputEntry.set_text('5:00');
+                  // Start the break timer
+                  this.timerStart();
+               }
+               return false; // Stop the break timer loop
+            });
+         } else {
+            // If the timer is running, stop it
+            this.timer.reset();
+            this.updateTimerLabelStyle();
             this.updateTimerLabel();
-            this.timerShow();
-            return false; // Stop this timeout
-         });
+            this.timerLabel.hide();
+            this.updateMenuButtonVisibilty();
+         }
       });
-      boxLayout.add_child(this.menuButtonFourth); // Corrected
+
+      boxLayout.add_child(this.menuButtonPomodoro);
 
    }
 
    disable() {
+      // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
       this.freeMainLoop();
       this.panelButton.destroy();
       this.panelButton = null;
-
-      // Stop the timer
-      this.timer.reset();
-      this.updateTimerLabelStyle();
-      this.updateTimerLabel();
-      this.timerLabel.hide();
-      this.updateMenuButtonVisibilty();
+      this.timer = null;
    }
 
    // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
@@ -235,6 +253,7 @@ class Extension {
          } else {
             style = 'countdown';
          }
+
          if (this.timerLabel.style_class != style) {
             this.timerLabel.style_class = style;
          }
@@ -242,40 +261,28 @@ class Extension {
    }
 
    // Swichtes style classes depending on button active status.
-   createTimerFinishedAlert() {
-      const player = global.display.get_sound_player();
-      const soundFile = Gio.File.new_for_path(Me.dir.get_path() + "/sfx/Polite.wav");
-
-      // Play the sound multiple times with a delay
-      const loopCount = 5;
-      const delaySeconds = 2;
-      for (let i = 0; i < loopCount; i++) {
-         // Play the sound
-         player.play_from_file(soundFile);
-
-         // Delay before playing the sound again
-         MainLoop.timeout_add_seconds(delaySeconds, () => {
-            // Increment the loop count
-            this.audioLoopCount++;
-
-            // Stop playing the sound after the specified number of loops
-            if (this.audioLoopCount >= loopCount) {
-               player.stop();
-
-               // Reset the loop count
-               this.audioLoopCount = 0;
-            }
-
-            return false;
-         });
+   handleButtonStyle(button, active) {
+      if (active) {
+         button.remove_style_class_name('img-button-inactive');
+         button.add_style_class_name('img-button-active');
+      } else {
+         button.remove_style_class_name('img-button-active');
+         button.add_style_class_name('img-button-inactive');
       }
+   }
 
+   createTimerFinishedAlert() {
+      // Loop 3 times
+      for (let i = 0; i < 3; i++) {
+         // Play Audio after a 2-second delay
+         setTimeout(() => {
+            let player = global.display.get_sound_player();
+            let soundFile = Gio.File.new_for_path(Me.dir.get_path() + "/sfx/Polite.wav");
+            player.play_from_file(soundFile, 'Alert', null);
+         }, i * 2000); // Delay each iteration by 2000 milliseconds (2 seconds)
+      }
+      // Send Notification
       Main.notify('Timer finished!');
    }
-}
 
-
-// Initializes the Extension
-function init() {
-   return new Extension();
 }
