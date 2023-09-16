@@ -142,7 +142,7 @@ class Extension {
       }
 
       // Pomodoro Button
-      this.menuButtonPomodoro = new PopupMenu.PopupImageMenuItem("", "alarm-symbolic");
+      this.menuButtonPomodoro = new PopupMenu.PopupImageMenuItem("", "appointment-soon-symbolic");
       this.menuButtonPomodoro.connect('activate', () => {
          // Check if the timer is already running
          if (!this.timer.isRunning()) {
@@ -169,12 +169,15 @@ class Extension {
             this.updateTimerLabel();
             this.timerLabel.hide();
             this.updateMenuButtonVisibilty();
+            this.createTimerFinishedAlert();
          }
       });
-
       boxLayout.add_child(this.menuButtonPomodoro);
-
    }
+
+
+
+
 
    disable() {
       // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
@@ -284,5 +287,4 @@ class Extension {
       // Send Notification
       Main.notify('Timer finished!');
    }
-
 }
