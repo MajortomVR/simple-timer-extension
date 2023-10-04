@@ -5,13 +5,13 @@ const TimerState = {
    FINISHED: 'Finished'
 };
 
-var Timer = class Timer {      
+var Timer = class Timer {
    constructor() {
-      this.state = TimerState.STOPPED;      
+      this.state = TimerState.STOPPED;
       this.lastUpdateTimestamp = 0;
       this.timeLeftSeconds = 0;
       this.notificationSent = false;
-   }   
+   }
 
    isRunning() {
       return this.state == TimerState.RUNNING;
@@ -38,7 +38,7 @@ var Timer = class Timer {
    }
 
    start(timeSeconds) {
-      this.state = TimerState.RUNNING;      
+      this.state = TimerState.RUNNING;
       this.lastUpdateTimestamp = new Date().getTime();
       this.timeLeftSeconds = timeSeconds;
       this.notificationSent = false;
@@ -48,7 +48,7 @@ var Timer = class Timer {
       if (this.state == TimerState.RUNNING) {
          this.state = TimerState.PAUSED;
          this._updateTimeLeft();
-      }      
+      }
    }
 
    resume() {
@@ -64,14 +64,14 @@ var Timer = class Timer {
       this.timeLeftSeconds = 0;
       this.notificationSent = false;
    }
-   
-   update() {      
+
+   update() {
       if (this.state == TimerState.RUNNING) {
          this._updateTimeLeft();
-         
+
          if (this.timeLeftSeconds <= 0) {
             this.state = TimerState.FINISHED;
-            this.timeLeftSeconds = 0;            
+            this.timeLeftSeconds = 0;
          }
       }
    }
