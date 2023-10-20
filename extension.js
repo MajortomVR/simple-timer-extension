@@ -1,20 +1,19 @@
-const St = imports.gi.St;
-const Main = imports.ui.main;
-const MainLoop = imports.mainloop;
-const GObject = imports.gi.GObject;
-const Gio = imports.gi.Gio;
-const Clutter = imports.gi.Clutter;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const Misc = Me.imports.misc;
-const Timer = Me.imports.timer;
 
 
-class Extension {
-   constructor() {};
-   
+// UI imports
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+
+import Gio from  'gi://Gio';
+import St from  'gi://St';
+import Clutter from 'gi://Clutter';
+import * as Misc from "./misc.js"
+import { Timer } from "./timer.js"
+
+export default class Extension {
+   constructor () {}; 
+
    enable() {
       this.timer = new Timer.Timer();
 
@@ -241,7 +240,3 @@ class Extension {
 }
 
 
-// Initializes the Extension
-function init() {
-   return new Extension();
-}

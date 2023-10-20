@@ -5,7 +5,7 @@ const TimerState = {
    FINISHED: 'Finished'
 };
 
-var Timer = class Timer {      
+export default class Timer {      
    constructor() {
       this.state = TimerState.STOPPED;      
       this.lastUpdateTimestamp = 0;
