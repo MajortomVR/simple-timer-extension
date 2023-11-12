@@ -1,20 +1,17 @@
-const St = imports.gi.St;
-const Main = imports.ui.main;
-const MainLoop = imports.mainloop;
-const GObject = imports.gi.GObject;
-const Gio = imports.gi.Gio;
-const Clutter = imports.gi.Clutter;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
+import St from 'gi://St';
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+import Clutter from 'gi://Clutter';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js'; // https://gitlab.gnome.org/GNOME/gnome-shell/-/tree/main/js/ui
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const Misc = Me.imports.misc;
-const Timer = Me.imports.timer;
+import * as Misc from './misc.js';
+import * as Timer from './timer.js';
 
 
-class Extension {
-   constructor() {};
-   
+export default class TimerExtension extends Extension {
    enable() {
       this.timer = new Timer.Timer();
 
@@ -56,7 +53,7 @@ class Extension {
          let text = this.menuTimerInputEntry.get_text();                  
          let newText = "";
 
-         // This code comment filters the time input based on its format, either as a colon-separated format like "3:00:00" or a letter format like "2h 47m 12s".
+         // This filters the time input based on its format, either as a colon-separated format like "3:00:00" or a letter format like "2h 47m 12s".
          if (Misc.getTimeInputFormat(text) === Misc.TimeInputFormat.LETTERS) {
             newText = Misc.timeInputLetterHandler(text);
          } else {
@@ -81,7 +78,7 @@ class Extension {
 
       // PANEL-MENU
       let boxMenuItem = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
-      let boxLayout = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
+      let boxLayout = new St.BoxLayout({ x_align: Clutter.ActorAlign.START, x_expand: true });      
       boxMenuItem.add_child(boxLayout);
 
       // STOP Button
@@ -151,7 +148,7 @@ class Extension {
 
    initMainLoop() {
       // Update Timer
-      this.timeout = MainLoop.timeout_add(1000, () => {
+      this.timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
          this.timer.update();
          this.updateTimerLabel();
          
@@ -163,12 +160,12 @@ class Extension {
 
          this.updateTimerLabelStyle();
          
-         return true;
+         return GLib.SOURCE_CONTINUE;
       });
    }
 
    freeMainLoop() {
-      MainLoop.source_remove(this.timeout);
+      GLib.source_remove(this.timeout);
       this.timeout = null;
    }
 
@@ -231,17 +228,12 @@ class Extension {
    // Alert by sending a notification and a sound effect.
    createTimerFinishedAlert() {
       // Play Audio
+      let extensionObject = Extension.lookupByUUID('simple-timer@majortomvr.github.com');
       let player = global.display.get_sound_player();
-      let soundFile = Gio.File.new_for_path(Me.dir.get_path() + "/sfx/Polite.wav");
+      let soundFile = Gio.File.new_for_path(extensionObject.path + "/sfx/Polite.wav");
       player.play_from_file(soundFile, 'Alert', null);
       
       // Send Notification
       Main.notify('Timer finished!');
    }      
-}
-
-
-// Initializes the Extension
-function init() {
-   return new Extension();
 }

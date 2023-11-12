@@ -1,4 +1,4 @@
-const TimeInputFormat = {
+export const TimeInputFormat = {
    COLONS: 'COLONS',
    LETTERS: 'LETTERS'
 };
@@ -8,7 +8,7 @@ const TimeInputFormat = {
  * @param {string} text 
  * @returns {string} - TimeInputFormat
  */
-function getTimeInputFormat(text) {
+export function getTimeInputFormat(text) {
    // Detects the time input format.
    let lowerCasedText = text.toLowerCase();
    
@@ -27,7 +27,7 @@ function getTimeInputFormat(text) {
  * @param {*} seconds 
  * @returns the formatted time as a string
  */
-function formatTime(seconds) {
+export function formatTime(seconds) {
    let text = "";
 
    let secondsLeft = seconds;
@@ -66,7 +66,7 @@ function formatTime(seconds) {
  * @param {string} text a string like 2:47 or 1:12:10 (1h, 12min, 10sec)
  * @return {number} the time duration in seconds
  */
-function parseTimeInput(text) {
+export function parseTimeInput(text) {
    if (getTimeInputFormat(text) === TimeInputFormat.LETTERS) {
       return parseTimeInputHMS(text);
    } else {
@@ -78,7 +78,7 @@ function parseTimeInput(text) {
  *    Takes a Time String (HH:MM:SS) like 2:47 (2min 47) and returns the time in seconds.
  * @param {*} text a string like 2:47 or 1:12:10 (1h, 12min, 10sec)
  */
-function parseTimeInputColons(text) {
+export function parseTimeInputColons(text) {
    const timeArray = text.split(":");
    let timerSeconds = 0;
 
@@ -106,7 +106,7 @@ function parseTimeInputColons(text) {
  * @param {string} text - The input string to parse.
  * @returns {number} The duration in seconds represented by the input string.
  */
-function parseTimeInputHMS(text) {   
+export function parseTimeInputHMS(text) {   
    text = timeInputLetterHandler(text) + ' '; // The extra space character is needed for the parsing algorithm
 
    let buffer = "";
@@ -155,7 +155,7 @@ function parseTimeInputHMS(text) {
 
 
 // Returns true if any of the characters 'h', 'm' or 's' are found.
-function isHMSCharacter(character) {
+export function isHMSCharacter(character) {
    character = character.toLowerCase();
    return character.includes('h') || character.includes('m') || character.includes('s');
 }
@@ -165,7 +165,7 @@ function isHMSCharacter(character) {
  * @param {string} character 
  * @returns {boolean} if the given character is a digit
  */
-function isDigitCharacter(character) {
+export function isDigitCharacter(character) {
    return character >= '0' && character <= '9';
 }
 
@@ -174,7 +174,7 @@ function isDigitCharacter(character) {
  * @param {string} character 
  * @returns {boolean} if the given character is a letter
  */
-function isLetterCharacter(character) {
+export function isLetterCharacter(character) {
    return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
 }
 
@@ -183,11 +183,11 @@ function isLetterCharacter(character) {
  * @param {string} character 
  * @returns {boolean} if the given character is a space
  */
-function isSpaceCharacter(character) {
+export function isSpaceCharacter(character) {
    return character === ' ';
 }
 
-const CharacterType = {
+export const CharacterType = {
    DIGITS: 'DIGITS',
    LETTERS: 'LETTERS',
    SPACE: 'SPACE',
@@ -199,7 +199,7 @@ const CharacterType = {
  * @param {string} character - The character to check.
  * @returns {string} The string representation of the character type. Possible values: 'DIGITS', 'LETTERS', 'SPACE', or 'OTHER'.
  */
-function getCharacterType(character) {
+export function getCharacterType(character) {
    if (character == ' ') {
       return CharacterType.SPACE;
    } else if (isDigitCharacter(character)) {
@@ -217,7 +217,7 @@ function getCharacterType(character) {
  * @param {string} text 
  * @returns {string} text corrected to the 0h 0m 0s format
  */
-function timeInputLetterHandler(text){
+export function timeInputLetterHandler(text){
    const allowedChars = "hms1234567890 ";   
    let lowerCasedText = text.toLowerCase();
    let filteredText = "";
@@ -254,7 +254,7 @@ function timeInputLetterHandler(text){
  * @param {string} text 
  * @returns {string} text corrected to the HH:MM:SS format
  */
-function timeInputColonHandler(text) {
+export function timeInputColonHandler(text) {
    // filter all characters except 0-9
    let numberString = "";
 

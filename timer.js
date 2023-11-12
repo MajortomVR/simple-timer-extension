@@ -1,11 +1,11 @@
-const TimerState = {
+export const TimerState = {
    STOPPED: 'Stopped',
    PAUSED: 'Paused',
    RUNNING: 'Running',
    FINISHED: 'Finished'
 };
 
-var Timer = class Timer {      
+export var Timer = class Timer {      
    constructor() {
       this.state = TimerState.STOPPED;      
       this.lastUpdateTimestamp = 0;
