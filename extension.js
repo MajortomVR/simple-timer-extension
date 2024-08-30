@@ -4,6 +4,7 @@ import Gio from 'gi://Gio';
 import Clutter from 'gi://Clutter';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'; // https://gitlab.gnome.org/GNOME/gnome-shell/-/tree/main/js/ui
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
@@ -23,8 +24,8 @@ export default class TimerExtension extends Extension {
       this.timerLabel.hide();      
       
       this.panelButtonLayout = new St.BoxLayout();
-      this.panelButtonLayout.add(this.icon);
-      this.panelButtonLayout.add(this.timerLabel);           
+      this.panelButtonLayout.add_child(this.icon);
+      this.panelButtonLayout.add_child(this.timerLabel);
             
       
       // Timer Input Field            
@@ -70,7 +71,7 @@ export default class TimerExtension extends Extension {
          reactive : false,
          can_focus : false
       });
-      this.itemInput.add(this.menuTimerInputEntry);
+      this.itemInput.add_child(this.menuTimerInputEntry);
       this.panelButton.menu.addMenuItem(this.itemInput);
             
       // Seperator
@@ -228,12 +229,20 @@ export default class TimerExtension extends Extension {
    // Alert by sending a notification and a sound effect.
    createTimerFinishedAlert() {
       // Play Audio
-      let extensionObject = Extension.lookupByUUID('simple-timer@majortomvr.github.com');
       let player = global.display.get_sound_player();
-      let soundFile = Gio.File.new_for_path(extensionObject.path + "/sfx/Polite.wav");
+      let soundFile = Gio.File.new_for_path(this.path + "/sfx/Polite.wav");
       player.play_from_file(soundFile, 'Alert', null);
       
       // Send Notification
-      Main.notify('Timer finished!');
+      const systemSource = MessageTray.getSystemSource();
+      const notification = new MessageTray.Notification({
+         source: systemSource,
+         title: 'Timer',
+         body: 'The timer has finished!',
+         gicon: new Gio.ThemedIcon({name: 'alarm-symbolic'}),
+         // Same as `gicon`, but takes a themed icon name
+         iconName: 'alarm-symbolic'
+      });
+      systemSource.addNotification(notification);     
    }      
 }
