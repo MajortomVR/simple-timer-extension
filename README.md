@@ -21,7 +21,7 @@ You can simply type the time in. The format `hh:mm:ss` will be automatically add
 - `112` -> `1:12`
 - `53000` -> `5:30:00` 
 
-![Extension Preview](preview_5h30m.gif)
+![Extension Preview](preview_50000.gif)
 
 ## Detailed Time Specification
 
