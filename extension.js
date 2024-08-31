@@ -90,6 +90,7 @@ export default class TimerExtension extends Extension {
          this.updateTimerLabelStyle();
          this.updateTimerLabel();
          this.timerLabel.hide();
+         this.icon.show();
          this.updateMenuButtonVisibilty();
       });
       boxLayout.add_child(this.menuButtonStop);      
@@ -187,6 +188,7 @@ export default class TimerExtension extends Extension {
          this.updateTimerLabel();
          this.updateTimerLabelStyle(false);
          this.timerLabel.show();
+         this.icon.hide();
          this.menuButtonStop.show();
          this.updateMenuButtonVisibilty();
       }      
