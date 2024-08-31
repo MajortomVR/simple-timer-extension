@@ -17,3 +17,10 @@
 .img-button-inactive {
     color: grey;
 }
+
+.simple-timer-panel-button {
+    padding: 0px;
+    margin: 0px;
+    -natural-hpadding: 2px;
+    -minimum-hpadding: 2px;
+}

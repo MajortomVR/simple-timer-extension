@@ -17,6 +17,7 @@ export default class TimerExtension extends Extension {
       this.timer = new Timer.Timer();
 
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);      
+      this.panelButton.add_style_class_name('simple-timer-panel-button');
       
       // MAIN PANEL
       this.icon = new St.Icon({ icon_name: 'alarm-symbolic', style_class: 'system-status-icon' });
