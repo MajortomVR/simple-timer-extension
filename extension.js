@@ -39,6 +39,18 @@ export default class TimerExtension extends Extension {
          y_expand : true
       });
 
+      // Focus Input field when panel is opened
+      this.panelButton.menu.connect('open-state-changed', (menu, isOpen) => {
+         if (isOpen) {                                               
+            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+               this.menuTimerInputEntry.grab_key_focus();
+               Clutter.grab_keyboard(global.stage, this.menuTimerInputEntry);
+               
+               return GLib.SOURCE_REMOVE;
+           });
+         }
+      });
+
       this.menuTimerInputEntry.set_input_purpose(Clutter.TIME);
       this.menuTimerInputEntry.clutter_text.set_max_length(12);
 
@@ -120,7 +132,7 @@ export default class TimerExtension extends Extension {
       
       this.panelButton.add_child(this.panelButtonLayout);      
 
-      Main.panel.addToStatusArea("Simple-Timer", this.panelButton, 0, "right");
+      Main.panel.addToStatusArea("Simple-Timer", this.panelButton, 0, "right");      
 
       // Start
       this.updateMenuButtonVisibilty();
