@@ -41,13 +41,13 @@ export default class TimerExtension extends Extension {
 
       // Focus Input field when panel is opened
       this.panelButton.menu.connect('open-state-changed', (menu, isOpen) => {
-         if (isOpen) {                                               
-            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+         if (isOpen) {
+            this.menuOpeningDelayID = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
                this.menuTimerInputEntry.grab_key_focus();
                Clutter.grab_keyboard(global.stage, this.menuTimerInputEntry);
-               
+               this.menuOpeningDelayID = null;
                return GLib.SOURCE_REMOVE;
-           });
+            });
          }
       });
 
@@ -146,6 +146,10 @@ export default class TimerExtension extends Extension {
    }
 
    disable() {
+      if (this.menuOpeningDelayID) {
+         GLib.Source.remove(this.menuOpeningDelayID);
+         this.menuOpeningDelayID = null;
+      }
       // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
       this.freeMainLoop();
       this.panelButton.destroy();
