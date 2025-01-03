@@ -180,7 +180,7 @@ export default class TimerExtension extends Extension {
    }
 
    freeMainLoop() {
-      GLib.source_remove(this.timeout);
+      GLib.Source.remove(this.timeout);
       this.timeout = null;
    }
 
