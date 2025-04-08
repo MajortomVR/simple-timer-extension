@@ -161,7 +161,7 @@ export default class TimerExtension extends Extension {
    updateMenuButtonVisibilty() {      
       //showStartEntry ? this.menuTimerInputEntry.show() : this.menuTimerInputEntry.hide();
       this.handleButtonStyle(this.menuButtonStop, this.timer.isStopped());
-      this.handleButtonStyle(this.menuButtonPause, this.timer.isPaused());
+      this.handleButtonStyle(this.menuButtonPause, this.timer.isPaused() || this.timer.isStopped());
       this.handleButtonStyle(this.menuButtonResume, this.timer.isRunning());
    }   
 
