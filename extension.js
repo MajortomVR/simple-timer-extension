@@ -160,8 +160,8 @@ export default class TimerExtension extends Extension {
    // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
    updateMenuButtonVisibilty() {      
       //showStartEntry ? this.menuTimerInputEntry.show() : this.menuTimerInputEntry.hide();
-      this.handleButtonStyle(this.menuButtonStop, this.timer.isStopped());
-      this.handleButtonStyle(this.menuButtonPause, this.timer.isPaused() || this.timer.isStopped());
+      this.handleButtonStyle(this.menuButtonStop, this.timer.isStopped() || this.timer.isFinished());
+      this.handleButtonStyle(this.menuButtonPause, this.timer.isPaused() || this.timer.isFinished() || this.timer.isStopped());
       this.handleButtonStyle(this.menuButtonResume, this.timer.isRunning());
    }   
 
