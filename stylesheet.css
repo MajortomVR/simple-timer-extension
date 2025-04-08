@@ -10,12 +10,8 @@
     color: grey;
 }
 
-.img-button-active {
-    color: white;
-}
-
 .img-button-inactive {
-    color: grey;
+    color: rgba(128, 128, 128, 0.2);
 }
 
 .simple-timer-panel-button {

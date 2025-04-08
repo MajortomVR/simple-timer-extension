@@ -235,13 +235,13 @@ export default class TimerExtension extends Extension {
    }
    
    // Swichtes style classes depending on button active status.
-   handleButtonStyle(button, active) {
-      if (active) {
-         button.remove_style_class_name('img-button-inactive');
-         button.add_style_class_name('img-button-active');
-      } else {
-         button.remove_style_class_name('img-button-active');
+   handleButtonStyle(button, inactive) {
+      if (inactive) {
+         button.sensitive = false;
          button.add_style_class_name('img-button-inactive');
+      } else {
+         button.sensitive = true;
+         button.remove_style_class_name('img-button-inactive');
       }      
    }
    
