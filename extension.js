@@ -44,7 +44,6 @@ export default class TimerExtension extends Extension {
          if (isOpen) {
             this.menuOpeningDelayID = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
                this.menuTimerInputEntry.grab_key_focus();
-               Clutter.grab_keyboard(global.stage, this.menuTimerInputEntry);
                this.menuOpeningDelayID = null;
                return GLib.SOURCE_REMOVE;
             });
