@@ -159,9 +159,9 @@ export default class TimerExtension extends Extension {
    // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
    updateMenuButtonVisibilty() {      
       //showStartEntry ? this.menuTimerInputEntry.show() : this.menuTimerInputEntry.hide();
-      this.handleButtonStyle(this.menuButtonStop, this.timer.isStopped() || this.timer.isFinished());
-      this.handleButtonStyle(this.menuButtonPause, this.timer.isPaused() || this.timer.isFinished() || this.timer.isStopped());
-      this.handleButtonStyle(this.menuButtonResume, this.timer.isRunning());
+      this.handleButtonStyle(this.menuButtonStop, !this.timer.isStopped());
+      this.handleButtonStyle(this.menuButtonPause, this.timer.isRunning());
+      this.handleButtonStyle(this.menuButtonResume, !this.timer.isRunning());
    }   
 
    initMainLoop() {
@@ -234,14 +234,14 @@ export default class TimerExtension extends Extension {
    }
    
    // Swichtes style classes depending on button active status.
-   handleButtonStyle(button, inactive) {
-      if (inactive) {
-         button.sensitive = false;
-         button.add_style_class_name('img-button-inactive');
-      } else {
-         button.sensitive = true;
+   handleButtonStyle(button, active) {
+      button.sensitive = active;
+
+      if (active) {
          button.remove_style_class_name('img-button-inactive');
-      }      
+      } else {
+         button.add_style_class_name('img-button-inactive');
+      }
    }
    
    // Alert by sending a notification and a sound effect.
