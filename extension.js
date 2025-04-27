@@ -133,7 +133,7 @@ export default class TimerExtension extends Extension {
       this.panelButton.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
       
       // Settings entry
-      const settingsMenuItem = new PopupMenu.PopupImageMenuItem('', 'preferences-system-symbolic');
+      const settingsMenuItem = new PopupMenu.PopupImageMenuItem('', 'preferences-system-symbolic', {style_class: 'control-button'});
       settingsMenuItem.x_align = Clutter.ActorAlign.CENTER;
       settingsMenuItem.connect('activate', () => {
          this.openPreferences();
