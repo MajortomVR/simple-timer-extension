@@ -94,26 +94,6 @@ export default class TimerExtension extends Extension {
       let boxLayout = new St.BoxLayout({ x_align: Clutter.ActorAlign.START, x_expand: true });      
       boxMenuItem.add_child(boxLayout);
 
-      // STOP Button
-      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("", "media-playback-stop-symbolic");      
-      this.menuButtonStop.connect('activate', () => {
-         this.timer.reset();
-         this.updateTimerLabelStyle();
-         this.updateTimerLabel();
-         this.timerLabel.hide();
-         this.icon.show();
-         this.updateMenuButtonVisibilty();
-      });
-      boxLayout.add_child(this.menuButtonStop);      
-
-      // Pause Button
-      this.menuButtonPause = new PopupMenu.PopupImageMenuItem("", "media-playback-pause-symbolic");      
-      this.menuButtonPause.connect('activate', () => {
-         this.timer.pause();
-         this.updateMenuButtonVisibilty();
-      });      
-      boxLayout.add_child(this.menuButtonPause);
-
       // Resume Button
       this.menuButtonResume = new PopupMenu.PopupImageMenuItem("", "media-playback-start-symbolic");
       this.menuButtonResume.connect('activate', () => {
@@ -128,6 +108,25 @@ export default class TimerExtension extends Extension {
       boxLayout.add_child(this.menuButtonResume);
       this.panelButton.menu.addMenuItem(boxMenuItem);
 
+      // Pause Button
+      this.menuButtonPause = new PopupMenu.PopupImageMenuItem("", "media-playback-pause-symbolic");      
+      this.menuButtonPause.connect('activate', () => {
+         this.timer.pause();
+         this.updateMenuButtonVisibilty();
+      });      
+      boxLayout.add_child(this.menuButtonPause);
+
+      // STOP Button
+      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("", "media-playback-stop-symbolic");      
+      this.menuButtonStop.connect('activate', () => {
+         this.timer.reset();
+         this.updateTimerLabelStyle();
+         this.updateTimerLabel();
+         this.timerLabel.hide();
+         this.icon.show();
+         this.updateMenuButtonVisibilty();
+      });
+      boxLayout.add_child(this.menuButtonStop);      
       
       this.panelButton.add_child(this.panelButtonLayout);      
 
