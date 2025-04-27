@@ -9,4 +9,11 @@ export class Settings {
    setLastTimerInput(userTimerInputString) {
       this._settings.set_string('last-timer-input', userTimerInputString);
    }
+
+   getCustomAlertSfxFile() {
+      return this._settings.get_string('alert-sfx-file');
+   }
+   setCustomAlertSfxFile(file) {
+      this._settings.set_string('alert-sfx-file', file);
+   }
 }

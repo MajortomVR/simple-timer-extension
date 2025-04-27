@@ -1,3 +1,6 @@
+import Gio from 'gi://Gio';
+
+
 export const TimeInputFormat = {
    COLONS: 'COLONS',
    LETTERS: 'LETTERS'
@@ -281,4 +284,25 @@ export function timeInputColonHandler(text) {
 
    // Only return the first 9 characters
    return finalText.slice(0, 9);
+}
+
+/**
+ * Checks if a file exists at the specified path.
+ * @param {string} file 
+ * @returns {boolean}
+ */
+export function fileExists(file) {
+   const gFile = Gio.File.new_for_path(file);
+   return gFile.query_exists(null);
+}
+
+/**
+ * Plays an audio file using the system sound player.
+ * @param {string} file - The absolute file path to the audio file to play.
+ */
+export function playAudio(global, file) {
+   const audioFileHandle = Gio.File.new_for_path(file);
+   
+   const player = global.display.get_sound_player();
+   player.play_from_file(audioFileHandle, 'Alert', null);
 }
