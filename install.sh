@@ -22,6 +22,7 @@ cp extension.js "$TARGET_DIRECTORY"
 cp misc.js "$TARGET_DIRECTORY"
 cp timer.js "$TARGET_DIRECTORY"
 cp settings.js "$TARGET_DIRECTORY"
+cp prefs.js "$TARGET_DIRECTORY"
 cp -r schemas "$TARGET_DIRECTORY"
 
 echo "Installed the extension to: ${TARGET_DIRECTORY}"

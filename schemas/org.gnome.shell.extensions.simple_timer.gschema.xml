@@ -5,5 +5,10 @@
       <default>'5m'</default>
       <description>Stores the user's most recent timer input.</description>
     </key>
+    <key name="alert-sfx-file" type="s">
+        <default>''</default>
+        <summary>Custom sound for timer alerts</summary>
+        <description>Specifies the path to a custom audio file that will be played when the timer completes. If not set, the default alert sound will be used.</description>
+    </key>
   </schema>
 </schemalist>

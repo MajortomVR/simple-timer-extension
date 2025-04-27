@@ -88,9 +88,6 @@ export default class TimerExtension extends Extension {
       this.itemInput.add_child(this.menuTimerInputEntry);
       this.panelButton.menu.addMenuItem(this.itemInput);
             
-      // Seperator
-      this.panelButton.menu.addMenuItem( new PopupMenu.PopupSeparatorMenuItem() );      
-
       // PANEL-MENU
       let boxMenuItem = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
       let boxLayout = new St.BoxLayout({ x_align: Clutter.ActorAlign.CENTER, x_expand: true });      
@@ -131,8 +128,20 @@ export default class TimerExtension extends Extension {
       boxLayout.add_child(this.menuButtonStop);      
       
       this.panelButton.add_child(this.panelButtonLayout);      
+      
+      // Create a separator
+      this.panelButton.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+      
+      // Settings entry
+      const settingsMenuItem = new PopupMenu.PopupImageMenuItem('', 'preferences-system-symbolic');
+      settingsMenuItem.x_align = Clutter.ActorAlign.CENTER;
+      settingsMenuItem.connect('activate', () => {
+         this.openPreferences();
+      });
+      this.panelButton.menu.addMenuItem(settingsMenuItem);
 
-      Main.panel.addToStatusArea("Simple-Timer", this.panelButton, 0, "right");      
+      // Adds the panel button to the status area, positioned on the right side of the panel.
+      Main.panel.addToStatusArea(this.uuid, this.panelButton, 0, "right");
 
       // Start
       this.updateMenuButtonVisibilty();
@@ -249,10 +258,11 @@ export default class TimerExtension extends Extension {
    
    // Alert by sending a notification and a sound effect.
    createTimerFinishedAlert() {
-      // Play Audio
-      let player = global.display.get_sound_player();
-      let soundFile = Gio.File.new_for_path(this.path + "/sfx/Polite.wav");
-      player.play_from_file(soundFile, 'Alert', null);
+      const defaultAudioFile = GLib.build_filenamev([this.path, '/sfx/Polite.wav']);
+      const customAudioFile = this.settings.getCustomAlertSfxFile();
+      const audioFile = Misc.fileExists(customAudioFile) ? customAudioFile : defaultAudioFile;
+
+      Misc.playAudio(global, audioFile);
       
       // Send Notification
       const systemSource = MessageTray.getSystemSource();
