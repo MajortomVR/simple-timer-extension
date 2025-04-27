@@ -6,6 +6,7 @@
     "45", "46", "47", "48"
   ],
   "url": "https://github.com/MajortomVR/simple-timer-extension",
+  "settings-schema": "org.gnome.shell.extensions.simple_timer",
   "version": 10,
   "session-modes":  [ "unlock-dialog", "user" ]
 }

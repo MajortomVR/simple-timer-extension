@@ -10,12 +10,13 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import * as Misc from './misc.js';
 import * as Timer from './timer.js';
-
+import * as Settings from './settings.js';
 
 export default class TimerExtension extends Extension {
    enable() {
       this.timer = new Timer.Timer();
-
+      this.settings = new Settings.Settings(this.getSettings());
+            
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);      
       this.panelButton.add_style_class_name('simple-timer-panel-button');
       
@@ -36,7 +37,8 @@ export default class TimerExtension extends Extension {
          can_focus : true,
          hint_text: _("Enter countdown time..."),
          x_expand : true,
-         y_expand : true
+         y_expand : true,
+         text: this.settings.getLastTimerInput(),
       });
 
       // Focus Input field when panel is opened
@@ -153,6 +155,7 @@ export default class TimerExtension extends Extension {
       this.panelButton.destroy();
       this.panelButton = null;
       this.timer = null;
+      this.settings = null;
    }
    
    // Shows Start/Input Timer or Stop Button in the Menu, depending on the current timer state [running/stopped].
@@ -191,6 +194,7 @@ export default class TimerExtension extends Extension {
       let timeSeconds = Misc.parseTimeInput( this.menuTimerInputEntry.get_text() );
       
       if (timeSeconds > 0) {
+         this.settings.setLastTimerInput(this.menuTimerInputEntry.get_text());
          this.timer.start(timeSeconds);
          this.timerShow();
       }      

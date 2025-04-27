@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.simple_timer" path="/org/gnome/shell/extensions/simple_timer/">
+    <key name="last-timer-input" type="s">
+      <default>'5m'</default>
+      <description>Stores the user's most recent timer input.</description>
+    </key>
+  </schema>
+</schemalist>
