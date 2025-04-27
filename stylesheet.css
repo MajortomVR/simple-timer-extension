@@ -20,3 +20,12 @@
     -natural-hpadding: 2px;
     -minimum-hpadding: 2px;
 }
+
+.control-button {
+    width: 22px;
+    height: 28px;
+    border-radius: 28px;
+    margin: 5px;
+    padding: 5px;
+    padding-left: 11px;
+}

@@ -93,11 +93,11 @@ export default class TimerExtension extends Extension {
 
       // PANEL-MENU
       let boxMenuItem = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
-      let boxLayout = new St.BoxLayout({ x_align: Clutter.ActorAlign.START, x_expand: true });      
+      let boxLayout = new St.BoxLayout({ x_align: Clutter.ActorAlign.CENTER, x_expand: true });      
       boxMenuItem.add_child(boxLayout);
 
       // Resume Button
-      this.menuButtonResume = new PopupMenu.PopupImageMenuItem("", "media-playback-start-symbolic");
+      this.menuButtonResume = new PopupMenu.PopupImageMenuItem("", "media-playback-start-symbolic", {style_class: 'control-button'});
       this.menuButtonResume.connect('activate', () => {
          if (this.timer.isFinished() || this.timer.isStopped()) {
             this.timerStart();
@@ -111,7 +111,7 @@ export default class TimerExtension extends Extension {
       this.panelButton.menu.addMenuItem(boxMenuItem);
 
       // Pause Button
-      this.menuButtonPause = new PopupMenu.PopupImageMenuItem("", "media-playback-pause-symbolic");      
+      this.menuButtonPause = new PopupMenu.PopupImageMenuItem("", "media-playback-pause-symbolic", {style_class: 'control-button'});
       this.menuButtonPause.connect('activate', () => {
          this.timer.pause();
          this.updateMenuButtonVisibilty();
@@ -119,7 +119,7 @@ export default class TimerExtension extends Extension {
       boxLayout.add_child(this.menuButtonPause);
 
       // STOP Button
-      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("", "media-playback-stop-symbolic");      
+      this.menuButtonStop = new PopupMenu.PopupImageMenuItem("", "media-playback-stop-symbolic", {style_class: 'control-button'});
       this.menuButtonStop.connect('activate', () => {
          this.timer.reset();
          this.updateTimerLabelStyle();
