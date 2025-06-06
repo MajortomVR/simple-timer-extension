@@ -3,10 +3,10 @@
 ![Extension Preview](preview.png)
 
 # Description:
-**Simple Timer** is a Gnome Shell Extension that adds a timer to your panel.
-It sends a notification and plays a sound effect when the timer expires.
+**Simple Timer** is a GNOME Shell extension that adds a customizable countdown timer to your top panel.
+When the timer ends, it notifies you with a visual alert and a customizable sound effect.
 
-Never again will you forget the oven!
+Perfect for reminders, productivity breaks, or - yes - not burning the pizza again.
 
 # Usage:
 
@@ -47,7 +47,8 @@ You can specify the duration using hours, minutes, and seconds (h, m, s). The or
 - After downloading the extension just run the install script:
 
    ```
-   sh install.sh
+   chmod +x install.sh
+   ./install.sh
    ```
 
 ## Enable the Extension:
