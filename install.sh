@@ -10,6 +10,9 @@ TARGET_DIRECTORY="/home/${USER}/.local/share/gnome-shell/extensions/${EXTENSION_
 
 glib-compile-schemas --strict schemas/
 
+# Remove old installation
+rm -rf "$TARGET_DIRECTORY"
+
 # Create Main Folder
 mkdir -p "$TARGET_DIRECTORY"
 
@@ -19,10 +22,9 @@ cp README.md "$TARGET_DIRECTORY"
 cp metadata.json "$TARGET_DIRECTORY"
 cp stylesheet.css "$TARGET_DIRECTORY"
 cp extension.js "$TARGET_DIRECTORY"
-cp misc.js "$TARGET_DIRECTORY"
-cp timer.js "$TARGET_DIRECTORY"
-cp settings.js "$TARGET_DIRECTORY"
 cp prefs.js "$TARGET_DIRECTORY"
+
+cp -r src "$TARGET_DIRECTORY"
 cp -r schemas "$TARGET_DIRECTORY"
 
 echo "Installed the extension to: ${TARGET_DIRECTORY}"

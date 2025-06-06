@@ -8,9 +8,10 @@ import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-import * as Misc from './misc.js';
-import * as Timer from './timer.js';
-import * as Settings from './settings.js';
+import * as Misc from './src/misc.js';
+import * as Timer from './src/Timer.js';
+import * as Settings from './src/Settings.js';
+import * as Hotkey from './src/Hotkey.js';
 
 export default class TimerExtension extends Extension {
    enable() {
@@ -151,10 +152,14 @@ export default class TimerExtension extends Extension {
       if (this.timer.isRunning()) {
          this.timer.update();
          this.timerShow();
-      }      
+      }
+
+      this.hotkey = new Hotkey.Hotkey(this.settings, this.settings.getAlertStartHotkeyID(), this.timerStart.bind(this));
    }
 
    disable() {
+      this.hotkey.free();
+
       if (this.menuOpeningDelayID) {
          GLib.Source.remove(this.menuOpeningDelayID);
          this.menuOpeningDelayID = null;

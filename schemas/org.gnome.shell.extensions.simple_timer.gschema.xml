@@ -10,5 +10,9 @@
         <summary>Custom sound for timer alerts</summary>
         <description>Specifies the path to a custom audio file that will be played when the timer completes. If not set, the default alert sound will be used.</description>
     </key>
+    <key name="keyboard-shortcut" type="as">
+      <default><![CDATA[['<Ctrl><Super>a']]]></default>
+      <summary>Hotkey to start the timer.</summary>
+    </key>
   </schema>
 </schemalist>

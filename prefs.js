@@ -1,10 +1,13 @@
-import Gtk from "gi://Gtk";
+import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
+import Gdk from 'gi://Gdk';
+import Gio from 'gi://Gio';
+import GObject from 'gi://GObject';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-import * as Settings from './settings.js';
-import * as Misc from './misc.js';
+import * as Settings from './src/Settings.js';
+import * as Misc from './src/misc.js';
 
 export default class SimpleTimerPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
@@ -17,18 +20,97 @@ export default class SimpleTimerPreferences extends ExtensionPreferences {
         });
         window.add(mainPage);
 
-        // Add Main Group
-        const mainGroup = new Adw.PreferencesGroup({ title: 'Alert' });
-        mainPage.add(mainGroup);
-        
         // Custom alert sound file chooser
-        mainGroup.add( createFileChooser(window, 'Select custom sound file', (file) => this.settings.setCustomAlertSfxFile(file), () => this.settings.getCustomAlertSfxFile()) );
+        const alertGroup = new Adw.PreferencesGroup({ title: 'Alert' });
+        alertGroup.add( createFileChooser(window, 'Select custom sound file', (file) => this.settings.setCustomAlertSfxFile(file), () => this.settings.getCustomAlertSfxFile()) );
+        
+        // Custom Keyboard Shortcut
+        const customKeyboardGroup = new Adw.PreferencesGroup({ title: 'Hotkey' });
+        customKeyboardGroup.add( createHotkeyInput(window, 'Hotkey', 'Hotkey to start the timer.', this.settings, this.settings.getAlertStartHotkeyID()) );
+
+        mainPage.add(alertGroup);
+        mainPage.add(customKeyboardGroup);
     }
 }
 
+/**
+ *  Create a new Hotkey-Customizer ActionRow
+ * @param {object} parent window
+ * @param {string} title Action row title text
+ * @param {string} description  Action row subtitle description text
+ * @param {Settings} settings Settings object
+ * @param {string} hotkeyID The schema name of the hotkey
+ * @returns {Adw.ActionRow}
+ */
+function createHotkeyInput(parent, title, description, settings, hotkeyID) {
+    const hotkeyRow = new Adw.ActionRow({
+        title: title,
+        subtitle: description
+    });
 
-// Create a new preferences row
-function createFileChooser(parent, title, setFunction, getFunction) {
+    // Displays the shortcut
+    const shortcutLabel = new Gtk.ShortcutLabel({
+        accelerator: settings.getHotkey(hotkeyID),
+        disabled_text: 'Set a hotkey',
+        valign: Gtk.Align.CENTER,
+        halign: Gtk.Align.CENTER,
+    });
+    hotkeyRow.add_suffix(shortcutLabel);
+    hotkeyRow.activatable_widget = shortcutLabel;
+
+    settings.getSettings().connect(`changed::${hotkeyID}`, () => {
+        shortcutLabel.set_accelerator(settings.getHotkey(hotkeyID));
+    });
+
+    let isCapturing = false;
+    const controller = new Gtk.EventControllerKey();
+    // Waiting on key pressed
+    controller.connect('key-pressed', (_, keyval, keycode, state) => {
+        if (!isCapturing) return Gdk.EVENT_PROPAGATE;
+        const mod = state & Gtk.accelerator_get_default_mod_mask();
+        
+        // Escape cancels capturing mode
+        if (!mod && keyval === Gdk.KEY_Escape) {
+            isCapturing = false;
+            shortcutLabel.set_accelerator(settings.getHotkey(hotkeyID));
+            shortcutLabel.disabled_text = 'Set a hotkey';
+            return Gdk.EVENT_STOP;
+        }
+
+        if (!mod || !Gtk.accelerator_valid(keyval, mod)) return Gdk.EVENT_STOP;
+        
+        // Save the new shortcut
+        const shortcut = Gtk.accelerator_name_with_keycode(
+            null,
+            keyval,
+            keycode,
+            mod
+        );
+        settings.setHotkey(hotkeyID, shortcut);
+        isCapturing = false;
+        return Gdk.EVENT_STOP;
+    });        
+
+    // Activated (clicked) hotkey configuration
+    hotkeyRow.connect('activated', () => {            
+        isCapturing = true;
+        shortcutLabel.set_accelerator('');
+        shortcutLabel.disabled_text = 'Set a hotkey ...';
+    });
+    hotkeyRow.add_controller(controller);
+    return hotkeyRow;
+}
+
+
+/**
+ * Create a new File-Chooser ActionRow
+ * @param {object} parent window
+ * @param {string} title string
+ * @param {function} onSetAudioFile callback function executed to set(write) the audio filepath
+ * @param {function} onGetAudioFile callback function executed to get(read) the audio filepath.
+ * @returns {Adw.ActionRow}
+ */
+function createFileChooser(parent, title, onSetAudioFile, onGetAudioFile) {
     const soundFileButton = new Adw.ActionRow({ title: title });
 
     // Warning Icon
@@ -54,7 +136,7 @@ function createFileChooser(parent, title, setFunction, getFunction) {
 
     // Reset the custom sfx file
     deleteButton.connect('clicked', () => {
-        setFunction('');
+        onSetAudioFile('');
         onUpdate();
     });
 
@@ -82,7 +164,7 @@ function createFileChooser(parent, title, setFunction, getFunction) {
                 const selectedFile = native.get_file().get_path();
                 
                 if (Misc.fileExists(selectedFile)) {
-                    setFunction(selectedFile);
+                    onSetAudioFile(selectedFile);
                     onUpdate();
                 }
             }
@@ -92,7 +174,7 @@ function createFileChooser(parent, title, setFunction, getFunction) {
     });
 
     function onUpdate() {
-        const file = getFunction();
+        const file = onGetAudioFile();
         soundFileButton.subtitle = file || 'No file selected';
         
         warningIcon.set_visible(file && !Misc.fileExists(file));
