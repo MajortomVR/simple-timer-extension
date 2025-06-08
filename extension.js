@@ -159,6 +159,7 @@ export default class TimerExtension extends Extension {
 
    disable() {
       this.hotkey.free();
+      this.hotkey = null;
 
       if (this.menuOpeningDelayID) {
          GLib.Source.remove(this.menuOpeningDelayID);
