@@ -144,12 +144,14 @@ function createFileChooser(parent, title, onSetAudioFile, onGetAudioFile) {
     // Open the file chooser
     fileButton.connect('clicked', () => {
         // Create a row for selecting a custom sound effect file
-        const filechooser = new Gtk.FileChooserNative({
+        const filechooser = new Gtk.FileChooserDialog({
             title: title,
+            transient_for: parent,
             modal: true,
-            action: Gtk.FileChooserAction.OPEN,                
+            action: Gtk.FileChooserAction.OPEN,
         });
-        filechooser.set_transient_for(parent);
+        filechooser.add_button('Cancel', Gtk.ResponseType.CANCEL);
+        filechooser.add_button('OK', Gtk.ResponseType.ACCEPT);
 
         // Filter by mime types
         const mimeTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac'];
@@ -160,15 +162,16 @@ function createFileChooser(parent, title, onSetAudioFile, onGetAudioFile) {
         filechooser.set_filter(filter);
 
         // Handle filechooser response
-        filechooser.connect('response', (native, responseID) => {
+        filechooser.connect('response', (dialog, responseID) => {
             if (responseID === Gtk.ResponseType.ACCEPT) {
-                const selectedFile = native.get_file().get_path();
+                const selectedFile = dialog.get_file().get_path();
                 
                 if (Misc.fileExists(selectedFile)) {
                     onSetAudioFile(selectedFile);
                     onUpdate();
                 }
             }
+            dialog.destroy();
         });
 
         filechooser.show();
