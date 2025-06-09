@@ -11,7 +11,7 @@ import * as Misc from './src/misc.js';
 
 export default class SimpleTimerPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
-        this.settings = new Settings.Settings(this.getSettings());
+        const settings = new Settings.Settings(this.getSettings());
 
         // Main Page
         const mainPage = new Adw.PreferencesPage({
@@ -22,11 +22,11 @@ export default class SimpleTimerPreferences extends ExtensionPreferences {
 
         // Custom alert sound file chooser
         const alertGroup = new Adw.PreferencesGroup({ title: 'Alert' });
-        alertGroup.add( createFileChooser(window, 'Select custom sound file', (file) => this.settings.setCustomAlertSfxFile(file), () => this.settings.getCustomAlertSfxFile()) );
+        alertGroup.add( createFileChooser(window, 'Select custom sound file', (file) => settings.setCustomAlertSfxFile(file), () => settings.getCustomAlertSfxFile()) );
         
         // Custom Keyboard Shortcut
         const customKeyboardGroup = new Adw.PreferencesGroup({ title: 'Hotkey' });
-        customKeyboardGroup.add( createHotkeyInput(window, 'Hotkey', 'Hotkey to start the timer.', this.settings, this.settings.getAlertStartHotkeyID()) );
+        customKeyboardGroup.add( createHotkeyInput(window, 'Hotkey', 'Hotkey to start the timer.', settings, settings.getAlertStartHotkeyID()) );
 
         mainPage.add(alertGroup);
         mainPage.add(customKeyboardGroup);
