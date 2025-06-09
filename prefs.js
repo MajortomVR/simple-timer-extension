@@ -58,6 +58,7 @@ function createHotkeyInput(parent, title, description, settings, hotkeyID) {
     hotkeyRow.add_suffix(shortcutLabel);
     hotkeyRow.activatable_widget = shortcutLabel;
 
+    // Update the displayed hotkey label whenever the associated setting changes
     settings.getSettings().connect(`changed::${hotkeyID}`, () => {
         shortcutLabel.set_accelerator(settings.getHotkey(hotkeyID));
     });
