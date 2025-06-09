@@ -1,30 +1,18 @@
 #!/usr/bin/env bash
 
 # Extract Extension Name
-EXTENSION_NAME=$(grep "uuid" "metadata.json" | cut -d'"' -f 4)
-TARGET_DIRECTORY="/home/${USER}/.local/share/gnome-shell/extensions/${EXTENSION_NAME}"
+EXTENSION_NAME=$(jq -r .uuid metadata.json)
+TARGET_DIRECTORY="${HOME}/.local/share/gnome-shell/extensions/${EXTENSION_NAME}"
 
-#echo "$EXTENSION_NAME"
-#echo ~"$USER"
-#echo "$TARGET_DIRECTORY"
-
+# Compile schema file
 glib-compile-schemas --strict schemas/
+
+bash build_release_zip.sh --manual-install
+ZIP_FILENAME="install-${EXTENSION_NAME}.zip"
 
 # Remove old installation
 rm -rf "$TARGET_DIRECTORY"
-
-# Create Main Folder
-mkdir -p "$TARGET_DIRECTORY"
-
-# Copy files & directories
-cp -r sfx "$TARGET_DIRECTORY"
-cp README.md "$TARGET_DIRECTORY"
-cp metadata.json "$TARGET_DIRECTORY"
-cp stylesheet.css "$TARGET_DIRECTORY"
-cp extension.js "$TARGET_DIRECTORY"
-cp prefs.js "$TARGET_DIRECTORY"
-
-cp -r src "$TARGET_DIRECTORY"
-cp -r schemas "$TARGET_DIRECTORY"
+# Unzip into target directory
+unzip "$ZIP_FILENAME" -d "$TARGET_DIRECTORY"
 
 echo "Installed the extension to: ${TARGET_DIRECTORY}"
