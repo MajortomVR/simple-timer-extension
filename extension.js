@@ -12,11 +12,14 @@ import * as Misc from './src/misc.js';
 import * as Timer from './src/Timer.js';
 import * as Settings from './src/Settings.js';
 import * as Hotkey from './src/Hotkey.js';
+import { AudioPlayer } from './src/AudioPlayer.js';
 
 export default class TimerExtension extends Extension {
    enable() {
       this.timer = new Timer.Timer();
+      
       this.settings = new Settings.Settings(this.getSettings());
+      this.audioPlayer = new AudioPlayer();
             
       this.panelButton = new PanelMenu.Button(0, "MainButton", false);      
       this.panelButton.add_style_class_name('simple-timer-panel-button');
@@ -119,6 +122,7 @@ export default class TimerExtension extends Extension {
       // STOP Button
       this.menuButtonStop = new PopupMenu.PopupImageMenuItem("", "media-playback-stop-symbolic", {style_class: 'control-button'});
       this.menuButtonStop.connect('activate', () => {
+         this.audioPlayer.stop();
          this.timer.reset();
          this.updateTimerLabelStyle();
          this.updateTimerLabel();
@@ -158,13 +162,21 @@ export default class TimerExtension extends Extension {
    }
 
    disable() {
-      this.hotkey.free();
-      this.hotkey = null;
+      if (this.hotkey) {
+         this.hotkey.free();
+         this.hotkey = null;
+      }
+
+      if (this.audioPlayer) {
+         this.audioPlayer.stop();
+         this.audioPlayer = null;
+      }
 
       if (this.menuOpeningDelayID) {
          GLib.Source.remove(this.menuOpeningDelayID);
          this.menuOpeningDelayID = null;
       }
+      
       // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
       this.freeMainLoop();
       this.panelButton.destroy();
@@ -268,7 +280,7 @@ export default class TimerExtension extends Extension {
       const customAudioFile = this.settings.getCustomAlertSfxFile();
       const audioFile = Misc.fileExists(customAudioFile) ? customAudioFile : defaultAudioFile;
 
-      Misc.playAudio(global, audioFile);
+      this.audioPlayer.play(audioFile);
       
       // Send Notification
       const systemSource = MessageTray.getSystemSource();
