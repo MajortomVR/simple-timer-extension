@@ -295,14 +295,3 @@ export function fileExists(file) {
    const gFile = Gio.File.new_for_path(file);
    return gFile.query_exists(null);
 }
-
-/**
- * Plays an audio file using the system sound player.
- * @param {string} file - The absolute file path to the audio file to play.
- */
-export function playAudio(global, file) {
-   const audioFileHandle = Gio.File.new_for_path(file);
-   
-   const player = global.display.get_sound_player();
-   player.play_from_file(audioFileHandle, 'Alert', null);
-}
