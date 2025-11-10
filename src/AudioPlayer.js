@@ -2,7 +2,6 @@ import Gst from 'gi://Gst';
 
 export class AudioPlayer {
     constructor() {
-        Gst.init(null);
         this.pipeline = null;
     };
 
@@ -11,6 +10,15 @@ export class AudioPlayer {
      * @param {string} file - The absolute file path to the audio file to play.
      */
     play(file) {
+        if (!Gst.is_initialized()) {
+            try {
+                Gst.init(null);
+            } catch(e) {
+                console.error('Failed to initialize Gst!', e);
+                return;
+            }
+        }
+
         this.stop();
 
         this.pipeline = Gst.ElementFactory.make('playbin', 'player');
