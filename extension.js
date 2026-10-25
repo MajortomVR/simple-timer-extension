@@ -162,6 +162,8 @@ export default class TimerExtension extends Extension {
    }
 
    disable() {
+      // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
+
       if (this.hotkey) {
          this.hotkey.free();
          this.hotkey = null;
@@ -177,8 +179,27 @@ export default class TimerExtension extends Extension {
          this.menuOpeningDelayID = null;
       }
       
-      // The Session-Mode "unlock-dialog" is needed because the timer should also be working on the lock screen.
       this.freeMainLoop();
+      
+      // Explicitly destroy and release all objects owned by this extension (review guidelines: destroy all objects).
+      if (this.icon) this.icon.destroy();
+      if (this.timerLabel) this.timerLabel.destroy();
+      if (this.panelButtonLayout) this.panelButtonLayout.destroy();
+      if (this.menuTimerInputEntry) this.menuTimerInputEntry.destroy();
+      if (this.itemInput) this.itemInput.destroy();
+      if (this.menuButtonResume) this.menuButtonResume.destroy();
+      if (this.menuButtonPause) this.menuButtonPause.destroy();
+      if (this.menuButtonStop) this.menuButtonStop.destroy();
+      
+      this.icon = null;
+      this.timerLabel = null;
+      this.panelButtonLayout = null;
+      this.menuTimerInputEntry = null;
+      this.itemInput = null;
+      this.menuButtonResume = null;
+      this.menuButtonPause = null;
+      this.menuButtonStop = null;
+      
       this.panelButton.destroy();
       this.panelButton = null;
       this.timer = null;
